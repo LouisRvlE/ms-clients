@@ -1,28 +1,20 @@
 services:
     app:
         build: .
-        container_name: nodejs-app
         ports:
-            - "3000:3000"
-        environment:
-            - DB_HOST=mysql
-            - DB_PORT=3306
-            - DB_USER=${DB_USER}
-            - DB_PASSWORD=${DB_PASSWORD}
-            - DB_NAME=${DB_NAME}
+            - "${APP_PORT}:${APP_PORT}"
+        env_file:
+            - .env
         depends_on:
             - mysql
+        restart: unless-stopped
 
     mysql:
         image: mysql:5.7
-        container_name: mysql
         ports:
-            - "3306:3306"
-        environment:
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-            MYSQL_DATABASE: ${DB_NAME}
-            MYSQL_USER: ${DB_USER}
-            MYSQL_PASSWORD: ${DB_PASSWORD}
+            - "${MYSQL_TCP_PORT}:${MYSQL_TCP_PORT}"
+        env_file:
+            - .env
         volumes:
             - mysql-data:/var/lib/mysql
 

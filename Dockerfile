@@ -1,6 +1,9 @@
 FROM node:22 AS builder
 
-COPY ./product-service /app
+COPY ./src /app/src
+COPY ./package*.json /app/
+COPY ./tsconfig*.json /app/
+
 
 WORKDIR /app
 
