@@ -2,6 +2,10 @@ import express from "express";
 import { Request, Response } from "express";
 import { Product } from "./entity/product.entity.js";
 import { db } from "./db.js";
+import * as dotenv from "dotenv";
+dotenv.config();
+
+console.log("coucou", process.env);
 
 db.initialize()
     .then(() => {
@@ -53,4 +57,8 @@ app.delete("/products/:id", async function (req: Request, res: Response) {
     res.send(results);
 });
 
-app.listen(3000);
+const PORT = process.env.APP_PORT || 3000;
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
