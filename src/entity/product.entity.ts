@@ -4,10 +4,9 @@ import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 export class Product {
     @PrimaryGeneratedColumn()
     id: number;
-
     @Column()
-    firstName: string;
+    name: string;
 
-    @Column()
-    lastName: string;
+    @Column("decimal", { precision: 5, scale: 2 })
+    price: number;
 }
