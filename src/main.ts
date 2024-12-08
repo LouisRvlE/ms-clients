@@ -5,56 +5,83 @@ import { db } from "./db.js";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-console.log("coucou", process.env);
-
-db.initialize()
-    .then(() => {
-        console.log("Data Source has been initialized!");
-    })
-    .catch((err) => {
-        console.error("Error during Data Source initialization:", err);
-    });
-
 const app = express();
 app.use(express.json());
 
 app.get("/users", async function (req: Request, res: Response) {
-    const users = await db.getRepository(User).find();
-    res.json(users);
+    try {
+        console.log("Fetching users...");
+        const users = await db.getRepository(User).find();
+        res.json(users);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            error: "An error occurred while fetching users",
+        });
+    }
 });
 
 app.get(
     "/users/:id",
     async function (req: Request<{ id: number }>, res: Response) {
-        const results = await db.getRepository(User).findOneBy({
-            id: req.params.id,
-        });
-        res.send(results);
+        try {
+            const results = await db.getRepository(User).findOneBy({
+                id: req.params.id,
+            });
+            res.send(results);
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({
+                error: "An error occurred while fetching the user",
+            });
+        }
     }
 );
 
 app.post("/users", async function (req: Request, res: Response) {
-    const user = db.getRepository(User).create(req.body);
-    const results = await db.getRepository(User).save(user);
-    res.send(results);
+    try {
+        const user = db.getRepository(User).create(req.body);
+        const results = await db.getRepository(User).save(user);
+        res.send(results);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            error: "An error occurred while creating the user",
+        });
+    }
 });
 
 app.put("/users/:id", async function (req: Request, res: Response) {
-    if (isNaN(Number(req.params.id))) {
-        res.status(400).send({ error: "Invalid user ID" });
+    try {
+        if (isNaN(Number(req.params.id))) {
+            res.status(400).send({ error: "Invalid user ID" });
+            return;
+        }
+        const id = parseInt(req.params.id);
+        const user = await db.getRepository(User).findOneBy({
+            id,
+        });
+        db.getRepository(User).merge(user, req.body);
+        const results = await db.getRepository(User).save(user);
+        res.send(results);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            error: "An error occurred while updating the user",
+        });
     }
-    const id = parseInt(req.params.id);
-    const user = await db.getRepository(User).findOneBy({
-        id,
-    });
-    db.getRepository(User).merge(user, req.body);
-    const results = await db.getRepository(User).save(user);
-    res.send(results);
 });
 
 app.delete("/users/:id", async function (req: Request, res: Response) {
-    const results = await db.getRepository(User).delete(req.params.id);
-    res.send(results);
+    try {
+        const results = await db.getRepository(User).delete(req.params.id);
+        res.send(results);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send({
+            error: "An error occurred while deleting the user",
+        });
+    }
 });
 
 const PORT = process.env.APP_PORT || 3000;
