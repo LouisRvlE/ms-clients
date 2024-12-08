@@ -27,5 +27,5 @@ curl -X PUT http://localhost:3002/users/2 -H "Content-Type: application/json" -d
 **5. Delete a user:**
 
 ```bash
-curl -X DELETE http://localhost:3002/users/3  # Replace 3 with the actual user ID
+curl -X DELETE http://localhost:3002/users/3
 ```
