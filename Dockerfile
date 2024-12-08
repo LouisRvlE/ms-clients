@@ -20,6 +20,6 @@ COPY --from=builder /app/package*.json ./
 
 RUN npm install --only=production
 
-EXPOSE 3000
+EXPOSE 3002
 
 CMD ["node", "./dist/main.js"]
